@@ -1,8 +1,12 @@
-#list{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+#list {
+  display: flex; /* Make the container a flexbox */
+  flex-wrap: wrap; /* Allow elements to wrap onto new lines */
+  width: fit-content; /* Adjust width as needed */
+  margin: 0 auto; /* Center the list horizontally */
 }
+
+
+
 figure{
   width:130px;
   border: 1px solid red;
