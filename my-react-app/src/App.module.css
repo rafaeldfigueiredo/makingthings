@@ -1,0 +1,9 @@
+/* App.module.css */
+.BlueParagraph {
+    color: blue;
+    text-align: left;
+  }
+  .GreenParagraph {
+    color: green;
+    text-align: right;
+  }
