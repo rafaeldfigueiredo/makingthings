@@ -1,18 +1,127 @@
-import { useEffect, useState } from "react";
+import { Fragment, useState } from "react";
+import './App.css'
 
-export default function App() {
-  const [title, setTitle] = useState('');
+function TextEditor() {
+  return (
+    <Fragment>
+      <nav>
+        <ul id="navList">
+          <li className="navElement">Home</li>
+          <li className="navElement">Text Editor</li>
+          <li className="navElement">Sobre</li>
+        </ul>
+      </nav>
+      <main>
+        <textarea name="" id="textEditor" rows="10" ></textarea>
+      </main>
+    </Fragment>
+  );
+}
 
-  useEffect(() => {
-    getData();
-  }, []);
+function ThingsToDo() {
+  return (
+    <Fragment>
+      <aside
+        style={{
+          bottom: "0",
+          fontSize: "14px",
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "start",
+          position: "relative",
+          height: "300px",
+          backgroundColor: "white",
+          position: "absolute",
+          top: "10px",
+          left: "50%",
+          border: "2px solid black",
+          overflowX: "none",
+          overflowY: "scroll",
+        }}
+      >
+        <h2>Core Functionality:</h2>
+        <ul>
+          <li>
+            Editing Area: A large, central section for typing and formatting
+            text.
+          </li>
+          <li>
+            Formatting Toolbar: Buttons or icons for applying styles (bold,
+            italics, headings, bullets).
+          </li>
+        </ul>
+        <h2>Additional Features (Consider):</h2>
+        <ul>
+          <li>
+            Text Formatting Options:
+            <ul>
+              <li>Font selection</li> <li>Text color options</li>
+              <li>Text alignment (left, center, right)</li>
+            </ul>
+          </li>
+          <li>
+            Paragraph Formatting:
+            <ul>
+              <li>Line spacing options</li> <li>Indentation controls</li>
+            </ul>
+          </li>
+          <li>
+            Content Management:
+            <ul>
+              <li>Inserting images and videos</li>
+              <li>Link creation and editing</li>
+            </ul>
+          </li>
+          <li>Undo/Redo Functionality</li>
+          <li>Live Preview: Reflect changes as users format text</li>
+        </ul>
+        <h3>Layout:</h3>
+        <ul>
+          <li>
+            Top Bar:
+            <ul>
+              <li>Save, export, or create new documents</li>
+              <li>(Optional) User account information</li>
+            </ul>
+          </li>
+          <li>
+            Bottom Bar:
+            <ul>
+              <li>Character count or word count display</li>
+              <li>(Optional) Fullscreen mode or table creation</li>
+            </ul>
+          </li>
+        </ul>
+        <h3>Bonus points:</h3>
+        <ul>
+          <li>Markdown Support</li>
+          <li>Collaboration Features: Real-time editing with other users</li>
+          <li>Version Control: Track changes made to the document</li>
+        </ul>
+      </aside>
+    </Fragment>
+  );
+}
 
-  const getData = async () => {
-    const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
-    const task = await response.json();
-    console.log(task)
-    setTitle(task.title);
+function App() {
+  let [isOn, setOn] = useState(false);
+  let toggleFunc = () => {
+    setOn(!isOn);
   };
 
-  return <h1>{title}</h1>;
+  return (
+    <Fragment>
+      <label style={{ display: "flex" }}>
+        <button onClick={toggleFunc}>Things to Do</button>
+        {isOn ? <ThingsToDo /> : <h4 style={{marginLeft:'15px'}}>Stories is off</h4>}
+      </label>
+      <br />
+      <br />
+      <br />
+      <hr />
+      <TextEditor />
+    </Fragment>
+  );
 }
+
+export default App;

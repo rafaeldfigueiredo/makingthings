@@ -1,0 +1,13 @@
+#textEditor{
+  width: 100%;
+}
+
+#navList{
+  display:flex;
+  list-style:none;
+  justify-content:space-around;
+}
+
+.navElement{
+  border: 1px solid blue;
+}
