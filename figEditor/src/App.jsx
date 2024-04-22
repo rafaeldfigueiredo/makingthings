@@ -21,24 +21,7 @@ function TextEditor() {
 function ThingsToDo() {
   return (
     <Fragment>
-      <aside
-        style={{
-          bottom: "0",
-          fontSize: "14px",
-          display: "flex",
-          flexDirection: "column",
-          textAlign: "start",
-          position: "relative",
-          height: "300px",
-          backgroundColor: "white",
-          position: "absolute",
-          top: "10px",
-          left: "50%",
-          border: "2px solid black",
-          overflowX: "none",
-          overflowY: "scroll",
-        }}
-      >
+      <aside id="todo">
         <h2>Core Functionality:</h2>
         <ul>
           <li>
@@ -112,7 +95,7 @@ function App() {
   return (
     <Fragment>
       <label style={{ display: "flex" }}>
-        <button onClick={toggleFunc}>Things to Do</button>
+        <button style={{height:'auto'}} onClick={toggleFunc}>Things to Do</button>
         {isOn ? <ThingsToDo /> : <h4 style={{marginLeft:'15px'}}>Stories is off</h4>}
       </label>
       <br />

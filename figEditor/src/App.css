@@ -1,0 +1,30 @@
+#textEditor{
+  width: 100%;
+}
+
+#navList{
+  display:flex;
+  list-style:none;
+  justify-content:space-around;
+}
+
+.navElement{
+  border: 1px solid blue;
+}
+
+#todo{
+  bottom: 0;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  position: relative;
+  height: 300px;
+  background-color: white;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  border: 2px solid black;
+  overflow-X: none;
+  overflow-Y: scroll;
+}
