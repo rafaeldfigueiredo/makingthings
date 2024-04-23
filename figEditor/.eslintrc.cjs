@@ -12,6 +12,8 @@ module.exports = {
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
   rules: {
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "no-unused-vars": "off",
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
