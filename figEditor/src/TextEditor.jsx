@@ -26,7 +26,7 @@ export default function TextEditor() {
       </header>
       <main>
         <FormatBar />
-        <textarea style={{ resize: "none" }} defaultValue={10} id="textEditor"/>
+        <textarea style={{ resize: "none" }} defaultValue={'LOREM IPSUM'} id="textEditor"/>
       </main>
     </Fragment>
   );

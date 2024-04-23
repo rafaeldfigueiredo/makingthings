@@ -13,13 +13,15 @@ export default function ThingsToDo() {
       <h2>Core Functionality:</h2>
       <ul>
         <li>
-          Editing Area: A large, central section for typing and formatting
-        
-          text.
+          <del>Editing Area: A large, central section for typing and formatting text.</del>
         </li>
         <li>
-          Formatting Toolbar: Buttons or icons for applying styles (bold,
-          italics, headings, bullets).
+          Formatting Toolbar: Buttons or icons for applying styles (
+            <del>bold</del>,
+            <del>italics</del>,
+            <del>underline</del>,
+            headings,
+            bullets).
         </li>
       </ul>
       <h2>Additional Features (Consider):</h2>
