@@ -1,0 +1,19 @@
+{
+  "name": "fignode",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev":"node --watch --no-warnings server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "fastify": "^4.26.2",
+    "postgres": "^3.4.4"
+  }
+}
