@@ -4,16 +4,6 @@ import { DatabasePostgres } from './database-postgres.js'
 const server = fastify()
 const database = new DatabasePostgres()
 
-server.get('/', (req, reply) => {
-  const stream = fs.createReadStream('./node22/dist/index.html')
-  reply.type('text/html').send(stream)
-})
-
-server.get('/', (req, reply) => {
-  reply.sendFile('./node22/dist/index.html') // 
-})
-
-
 server.get('/videos', () => {
   const videos = database.list()
   console.log(videos);
