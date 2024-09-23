@@ -1,7 +1,0 @@
-{
-  "tailwindCSS.emmetCompletions": true,
-  "browse-lite.startUrl": "http://localhost:3000",
-  "files.associations": {
-    "*.css": "tailwindcss"
-}
-}
