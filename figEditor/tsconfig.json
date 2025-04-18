@@ -1,0 +1,22 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ESNext", // Compile to modern JavaScript
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"], // Include standard browser/JS libs
+    "allowJs": false, // Disallow mixing JS and TS (optional, but good practice)
+    "skipLibCheck": true, // Skip type checking of declaration files (node_modules)
+    "esModuleInterop": true, // Enables compatibility with CommonJS modules
+    "allowSyntheticDefaultImports": true, // Allows default imports from modules with no default export
+    "strict": true, // Enable all strict type-checking options (RECOMMENDED!)
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext", // Use modern module system
+    "moduleResolution": "Node", // How modules get resolved
+    "resolveJsonModule": true,
+    "isolatedModules": true, // Ensure files can be transpiled independently
+    "noEmit": true, // Don't output files (Vite handles bundling)
+    "jsx": "react-jsx" // Use the modern JSX transform
+  },
+  "include": ["src"], // Which files TypeScript should check
+  "references": [{ "path": "./tsconfig.node.json" }] // Needed for Vite config files
+}

@@ -1,0 +1,112 @@
+/* App.css */
+body {
+  font-family: sans-serif;
+  margin: 20px;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+.App {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Header Styles */
+h1 {
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+header p {
+  color: #777;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+}
+
+/* Editor Container Styles */
+.editor-container {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.editor-toolbar {
+  margin-bottom: 10px;
+}
+
+.editor-toolbar button {
+  margin-right: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  color: #333;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.editor-toolbar button:hover {
+  background-color: #d0d0d0;
+}
+
+.editor-toolbar button b,
+.editor-toolbar button i,
+.editor-toolbar button u {
+  /* Ensure bold, italic, underline within buttons are styled */
+}
+
+.editor-input {
+  width: calc(100% - 20px); /* Adjust for padding */
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 1em;
+  line-height: 1.5;
+  resize: vertical; /* Allow vertical resizing */
+}
+
+.editor-container button.clear-button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f44336;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.editor-container button.clear-button:hover {
+  background-color: #e53935;
+}
+
+/* Character Counter Styles */
+.char-counter {
+  margin-top: 15px;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.char-counter h2 {
+  margin-top: 10px;
+  font-size: 1.1em;
+  color: #2c3e50;
+}
+
+.char-counter pre {
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto; /* Handle long text */
+  font-size: 0.9em;
+}
