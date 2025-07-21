@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, flash, redirect,request,jsonify,render_template,session, url_for
 from functools import wraps
 import json
@@ -6,7 +7,9 @@ app = Flask(__name__)
 app.secret_key = "heyitsmegoku"
 
 data_file = "users.json" 
+entry_file = "entries.json"
 
+# == Getter and Setter functions == #
 def load_users():
     with open(data_file, "r") as f:
         return json.load(f)
@@ -14,8 +17,22 @@ def load_users():
 def register_users(userlist):
     with open(data_file, "w") as f:
         return json.dump(userlist,f)
-        
 
+def load_entries():
+    try:
+        with open(entry_file, "r") as f:
+            data = json.load(f)
+            if isinstance(data,dict):
+                return data
+            else:
+                return {}
+    except FileNotFoundError:
+        return {}
+        
+def register_entries(entrylist):
+    with open(entry_file, "w") as f:
+        return json.dump(entrylist,f)
+    
 # === DecoFunc for auth === #
 def username_required(func):
     @wraps(func)
@@ -28,13 +45,12 @@ def username_required(func):
         return func(username=username, *args, **kwargs)
     return wrapper
 
-
 # === Routes === #
 @app.get("/")
 def landingPage():
     session_user = session.get("username")
     return render_template('index.html',username=session_user)
-
+# == Users Logic == #
 @app.get("/api/users")
 def get_users_json():
     with open(data_file,"r") as f:
@@ -47,12 +63,16 @@ def login():
         if username in [user["name"] for user in load_users()]:
             session["username"] = username
             flash("Success!", category="ok")
-            return redirect(url_for("dashboard"))  # make sure this is using url_for
+            return redirect(url_for("dashboard"))
         else:
-            flash("Something went wrong!", category="failure")
+            flash("Something went wrong!", category="error")
             return render_template("login.html")
-    flash("⚠️ This is a test flash", category="error")
     return render_template("login.html")
+
+@app.get("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -70,21 +90,65 @@ def register():
             return render_template("register.html")
     return render_template("register.html")
 
-@app.route("/test-flash")
-def test_flash():
-    flash("This is a test flash!", category="ok")
-    return render_template("login.html")  # must extend base.html
-
+# == CRUD Operations == #
+@app.post("/new-entry")
+def new_entry():
+    username = session.get("username")
+    content = request.form.get("new-entry")
+    if content:
+        if username:
+            entries = load_entries()
+            if username not in entries:
+                entries[username] = []
+            last_index = len(entries[username]) + 1
+            entries[username].append({"id":last_index,"text":content.strip(),"timestamp":datetime.now().strftime("%H:%M:%S")})
+            register_entries(entries)
+            return redirect("/dashboard")
+        else:
+            flash("You need to login",category="error")
+            return redirect("/login")
+    flash("You cannot post blank entries!")
+    return redirect("/dashboard")
 
 @app.get("/dashboard")
 @username_required
 def dashboard(username):
-    return render_template("dashboard.html", username=username)
+    entries = load_entries()
+    display_entries = []
+    for entry in entries[session.get("username")]:
+        display_entries.append(entry)
+    return render_template("dashboard.html", username=username, entries=display_entries)
 
-@app.get("/logout")
-def logout():
-    session.clear()
-    return redirect("/login")
+@app.route("/edit-entry/<int:entry_id>",methods=["GET","POST"])
+def edit_entry(entry_id):
+    username = session.get("username")
+    if username and request.method == "POST":
+        entries = load_entries()
+        return entries[username][entry_id]
+    elif username and request.method == "GET":
+        return render_template("edit.html",entry_id=entry_id)
+        
 
+@app.post("/delete-entry")
+def delete_entry():
+    username = session.get("username")
+    entry_index = int(request.form.get("entry-id"))
+    if username:
+        try:
+            entries = load_entries()
+            entries[username].pop(entry_index)
+            register_entries(entries)
+            flash("Deleted!",category="ok")
+            return redirect("/dashboard")
+        except IndexError:
+            flash("Invalid entry index", category="error")
+            return redirect("/dashboard")
+
+        
+    else:
+        flash("You need to login",category="error")
+        return redirect("/login")
+
+## == Ignition == ##
 if __name__ == "__main__":
     app.run(debug=True)

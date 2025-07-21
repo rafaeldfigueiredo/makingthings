@@ -1,5 +1,58 @@
 {% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<style>
+#entry-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 30px;
+  }
 
+  #entry-list li {
+    background-color: #fff8dc;
+    border: 2px dashed #ffa07a;
+    padding: 15px;
+    margin-bottom: 10px;
+    font-family: Comic Sans MS, Comic Sans, cursive;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px #f4a460;
+    text-align: left;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content:space-between;
+    
+  }
+
+  #entry-list li::before {
+    content: "📓 ";
+    font-size: 1.2em;
+  }
+  </style>
+{% endblock %}
 {% block content%}
+    <form action="/new-entry" method="post">
+        <label for="new-entry">Entry:</label>
+        <textarea name="new-entry" id="new-entry" placeholder="Enter your thoughts here:"></textarea>
+        <button type="submit">Add Entry</button>
+    </form>
+
+    <ul id="entry-list">
+        {% for entry in entries %}
+        <li class="entry">
+          <p>{{ entry.text }}</p>
+          <p>{{ entry.timestamp }}</p>
+          <form action="/edit-entry/{{ loop.index0 }}" method="get">
+            <button type="submit">✏️</button>
+        </form>
+          <form action="/delete-entry" method="post">
+            <input type="hidden" name="entry-id" value="{{ loop.index0 }}">
+            <button type="submit">🗑️</button>
+        </form>
+      </li>  
+        {% endfor %}
+    </ul>
+
     <a href="/logout"><button>Logout</button></a>
 {% endblock %}

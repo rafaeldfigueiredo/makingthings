@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Why did the HTML cross the road?</title>
+    <title>FigDiary</title>
+    {% block head%}
     <style>
         body {
             background: #f9f871;
@@ -44,13 +45,11 @@
             color: red;
             font-weight: bold;
         }
-    </style>
+        </style> 
+    {% endblock %}   
 </head>
 <body>
-
-
-
-  <!-- FLASH MESSAGE AREA -->
+  <img src="../logo.png" alt="" srcset="">
   {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
       <ul style="list-style: none; padding: 0;">
@@ -62,21 +61,19 @@
       </ul>
     {% endif %}
   {% endwith %}
-
-
-<div class="joke">Why did the HTML cross the road?</div>
-    <button onclick="showPunchline()">Show Punchline</button>
-    <div class="punchline" id="punchline" style="display:none;">
-        To get to the other <b>{% block punchline %}&lt;div&gt{% endblock %}</b>!
-    </div>
-    <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" alt="Dancing Cat">
-    <script>
-        function showPunchline() {
-            document.getElementById('punchline').style.display = 'block';
-        }
-    </script>
 {% block content %}    
-    
+    <h1>Welcome to FigDiary!</h1>
+    <p>
+      FigDiary is your personal space to jot down thoughts, memories, and daily experiences in a fun and colorful way. 
+      Whether you want to keep a private journal or just write for fun, FigDiary is here for you.
+    </p>
+    <p>
+      Join our community to start your diary journey. Already have an account? Log in to continue writing!
+    </p>
+    <div>
+      <a href="{{ url_for('login') }}"><button>Login</button></a>
+      <a href="{{ url_for('register') }}"><button>Register</button></a>
+    </div>
 {% endblock %}
 </body>
 </html>
