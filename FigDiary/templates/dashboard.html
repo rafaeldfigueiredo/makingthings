@@ -37,6 +37,7 @@
 <form action="/new-entry" method="post">
   <label for="new-entry">Entry:</label>
   <textarea name="new-entry" id="new-entry" placeholder="Enter your thoughts here:"></textarea>
+  <input type="text" name="tags" id="" placeholder="Enter Tags...">
   <button type="submit">Add Entry</button>
 </form>
 <ul id="entry-list">
@@ -52,10 +53,20 @@
   <li class="entry">
     <p>{{ entry.text }}</p>
     <p>{{ entry.timestamp }}</p>
-    <form action="/edit-entry/{{ loop.index0 }}" method="get"> {# Update Entry #}
+    {% if entry.tags %}
+      <ul>
+      {% for tag in entry.tags %}
+        <a href="/dashboard?tag={{ tag }}"><span>#{{ tag }}</span></a>
+        <br>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {# Update Entry #}
+    <form action="/edit-entry/{{ loop.index0 }}" method="get"> 
       <button type="submit">✏️</button>
     </form>
-    <form action="/delete-entry" method="post"> {# Delete Entry #}
+   {# Delete Entry #}
+    <form action="/delete-entry" method="post"> 
       <input type="hidden" name="entry-id" value="{{ loop.index0 }}">
       <button type="submit">🗑️</button>
     </form>

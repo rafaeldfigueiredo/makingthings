@@ -61,6 +61,7 @@
 <body>
   <img src="{{ url_for('static', filename='logo.png') }}" alt="FigDiary Logo"
     style="display: block; margin: 0 auto 30px auto; max-width: 100%; height: auto; width: 220px;">
+  {}
   {% with messages = get_flashed_messages(with_categories=True) %}
   {% if messages %}
   <ul style="list-style: none; padding: 0;">

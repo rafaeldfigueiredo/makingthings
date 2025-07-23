@@ -45,16 +45,13 @@ def username_required(func):
         return func(username=username, *args, **kwargs)
     return wrapper
 
-# === Routes === #
+# ===  === Routes ===  === #
 @app.get("/")
 def landingPage():
     session_user = session.get("username")
     return render_template('index.html',username=session_user)
+
 # == Users Logic == #
-@app.get("/api/users")
-def get_users_json():
-    with open(data_file,"r") as f:
-        return jsonify(load_users())
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -91,17 +88,22 @@ def register():
     return render_template("register.html")
 
 # == CRUD Operations == #
+
 @app.post("/new-entry")
-def new_entry():
-    username = session.get("username")
-    content = request.form.get("new-entry")
+@username_required
+def new_entry(username):
+    content = request.form.get("new-entry","")
+    tags = request.form.get("tags","")
     if content:
         if username:
             entries = load_entries()
             if username not in entries:
                 entries[username] = []
             last_index = len(entries[username]) + 1
-            entries[username].append({"id":last_index,"text":content.strip(),"timestamp":datetime.now().strftime("%H:%M:%S")})
+            if tags:
+                entries[username].append({"id":last_index,"text":content.strip(),"timestamp":datetime.now().strftime("%H:%M:%S"),"tags":tags.split(',')})
+            else:
+                entries[username].append({"id":last_index,"text":content.strip(),"timestamp":datetime.now().strftime("%H:%M:%S")})
             register_entries(entries)
             return redirect("/dashboard")
         else:
@@ -113,10 +115,11 @@ def new_entry():
 @app.route("/dashboard", methods=["GET","POST"])
 @username_required
 def dashboard(username):
-    entries = load_entries()
+    entries = load_entries()    
+    
     display_entries = []
     if request.method == "POST":
-        query = request.form.get("search")
+        query = request.form.get("search")            
         for entry in entries[username]:
             if query.lower() in entry["text"].lower():
                 display_entries.append(entry)
@@ -125,6 +128,15 @@ def dashboard(username):
             return redirect("/dashboard")
         return render_template("dashboard.html",username=username, entries=display_entries)
     elif request.method == "GET":
+        get_tags = request.args.get("tag")
+        if get_tags:
+            for entry in entries[username]:
+                if get_tags in entry.get("tags",[]):
+                    display_entries.append(entry)
+            return render_template("dashboard.html",username=username, entries=display_entries)
+        if username not in entries:
+            entries[username] = []
+            register_entries(entries)
         for entry in entries[username]:
             display_entries.append(entry)
         return render_template("dashboard.html", username=username, entries=display_entries)
@@ -151,8 +163,8 @@ def edit_entry(entry_id, username):
         
 
 @app.post("/delete-entry")
-def delete_entry():
-    username = session.get("username")
+@username_required
+def delete_entry(username):
     entry_index = int(request.form.get("entry-id"))
     if username:
         try:
