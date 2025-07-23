@@ -6,8 +6,8 @@ import json
 app = Flask(__name__)
 app.secret_key = "heyitsmegoku"
 
-data_file = "users.json" 
-entry_file = "entries.json"
+data_file = "data/users.json" 
+entry_file = "data/entries.json"
 
 # == Getter and Setter functions == #
 def load_users():
@@ -110,23 +110,44 @@ def new_entry():
     flash("You cannot post blank entries!")
     return redirect("/dashboard")
 
-@app.get("/dashboard")
+@app.route("/dashboard", methods=["GET","POST"])
 @username_required
 def dashboard(username):
     entries = load_entries()
     display_entries = []
-    for entry in entries[session.get("username")]:
-        display_entries.append(entry)
-    return render_template("dashboard.html", username=username, entries=display_entries)
+    if request.method == "POST":
+        query = request.form.get("search")
+        for entry in entries[username]:
+            if query.lower() in entry["text"].lower():
+                display_entries.append(entry)
+                print(display_entries)
+            flash("No results found!")
+            return redirect("/dashboard")
+        return render_template("dashboard.html",username=username, entries=display_entries)
+    elif request.method == "GET":
+        for entry in entries[username]:
+            display_entries.append(entry)
+        return render_template("dashboard.html", username=username, entries=display_entries)
 
-@app.route("/edit-entry/<int:entry_id>",methods=["GET","POST"])
-def edit_entry(entry_id):
-    username = session.get("username")
-    if username and request.method == "POST":
-        entries = load_entries()
-        return entries[username][entry_id]
-    elif username and request.method == "GET":
-        return render_template("edit.html",entry_id=entry_id)
+@app.route("/edit-entry/<int:entry_id>", methods=["GET", "POST"])
+@username_required
+def edit_entry(entry_id, username):
+    full_list = load_entries()
+    entry_to_edit = full_list.get(username, [])
+
+    if request.method == "POST":
+        new_content = request.form.get("text", "").strip()
+        if 0 <= entry_id < len(entry_to_edit):
+            entry_to_edit[entry_id]["text"] = new_content
+            entry_to_edit[entry_id]["timestamp"] = datetime.now().strftime("%H:%M:%S")
+            register_entries(full_list)
+            flash("Edit successful!", category="ok")
+            return redirect("/dashboard")
+    elif request.method == "GET":
+        entry = entry_to_edit[entry_id]
+        return render_template("edit.html", entry=entry, entry_id=entry_id)
+    flash("Something went wrong!",category="error")
+    return redirect("/dashboard")
         
 
 @app.post("/delete-entry")
@@ -143,8 +164,6 @@ def delete_entry():
         except IndexError:
             flash("Invalid entry index", category="error")
             return redirect("/dashboard")
-
-        
     else:
         flash("You need to login",category="error")
         return redirect("/login")

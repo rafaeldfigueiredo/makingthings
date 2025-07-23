@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block head %}
-{{ super() }}
+{{ super() }} {# Inherits other style properties from base.html#}
 <style>
-#entry-list {
+  #entry-list {
     list-style-type: none;
     padding: 0;
     margin-top: 30px;
@@ -21,38 +21,47 @@
     margin-left: auto;
     margin-right: auto;
     display: flex;
-    justify-content:space-between;
-    
+    justify-content: space-between;
+
   }
 
   #entry-list li::before {
     content: "📓 ";
     font-size: 1.2em;
   }
-  </style>
+</style>
 {% endblock %}
 {% block content%}
-    <form action="/new-entry" method="post">
-        <label for="new-entry">Entry:</label>
-        <textarea name="new-entry" id="new-entry" placeholder="Enter your thoughts here:"></textarea>
-        <button type="submit">Add Entry</button>
+
+{#Create Entry#}
+<form action="/new-entry" method="post">
+  <label for="new-entry">Entry:</label>
+  <textarea name="new-entry" id="new-entry" placeholder="Enter your thoughts here:"></textarea>
+  <button type="submit">Add Entry</button>
+</form>
+<ul id="entry-list">
+  {# Search Form #}
+  <label for="search">Search</label>
+  <form action="/dashboard" method="post">
+    <input type="text" name="search" id="" placeholder="Search entry...">
+    <button type="submit">Search</button>
+  </form>
+
+  {# Read Entries #}
+  {% for entry in entries %}
+  <li class="entry">
+    <p>{{ entry.text }}</p>
+    <p>{{ entry.timestamp }}</p>
+    <form action="/edit-entry/{{ loop.index0 }}" method="get"> {# Update Entry #}
+      <button type="submit">✏️</button>
     </form>
+    <form action="/delete-entry" method="post"> {# Delete Entry #}
+      <input type="hidden" name="entry-id" value="{{ loop.index0 }}">
+      <button type="submit">🗑️</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
 
-    <ul id="entry-list">
-        {% for entry in entries %}
-        <li class="entry">
-          <p>{{ entry.text }}</p>
-          <p>{{ entry.timestamp }}</p>
-          <form action="/edit-entry/{{ loop.index0 }}" method="get">
-            <button type="submit">✏️</button>
-        </form>
-          <form action="/delete-entry" method="post">
-            <input type="hidden" name="entry-id" value="{{ loop.index0 }}">
-            <button type="submit">🗑️</button>
-        </form>
-      </li>  
-        {% endfor %}
-    </ul>
-
-    <a href="/logout"><button>Logout</button></a>
+<a href="/logout"><button>Logout</button></a>
 {% endblock %}

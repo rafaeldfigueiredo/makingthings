@@ -1,83 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>FigDiary</title>
-    {% block head%}
-    <style>
-        body {
-            background: #f9f871;
-            font-family: Comic Sans MS, Comic Sans, cursive;
-            text-align: center;
-            margin-top: 10%;
-        }
-        .joke {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-        .punchline {
-            font-size: 1.5em;
-            color: #ff6347;
-            margin-top: 20px;
-        }
-        img {
-            margin-top: 30px;
-            width: 200px;
-        }
-        button {
-            background: #ffb347;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 30px;
-        }
-        button:hover {
-            background: #ff6347;
-            color: #fff;
-        }
-        .flash-ok {
-            color: green;
-            font-weight: bold;
-        }
-        .flash-failure, .flash-error {
-            color: red;
-            font-weight: bold;
-        }
-        </style> 
-    {% endblock %}   
+  <meta charset="UTF-8">
+  <title>FigDiary</title>
+  {% block head%}
+  <style>
+    body {
+      background: #f9f871;
+      font-family: Comic Sans MS, Comic Sans, cursive;
+      text-align: center;
+      margin-top: 10%;
+    }
+
+    .joke {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    .punchline {
+      font-size: 1.5em;
+      color: #ff6347;
+      margin-top: 20px;
+    }
+
+    img {
+      margin-top: 30px;
+      width: 200px;
+    }
+
+    button {
+      background: #ffb347;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+
+    button:hover {
+      background: #ff6347;
+      color: #fff;
+    }
+
+    .flash-ok {
+      color: green;
+      font-weight: bold;
+    }
+
+    .flash-failure,
+    .flash-error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+  {% endblock %}
 </head>
+
 <body>
-  <img src="../logo.png" alt="" srcset="">
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="FigDiary Logo"
+    style="display: block; margin: 0 auto 30px auto; max-width: 100%; height: auto; width: 220px;">
   {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-      <ul style="list-style: none; padding: 0;">
-        {% for category, message in messages %}
-          <li class="flash {{ category }}" style="margin-bottom: 1em; font-weight: bold;">
-            {{ message }}
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+  {% if messages %}
+  <ul style="list-style: none; padding: 0;">
+    {% for category, message in messages %}
+    <li class="flash {{ category }}" style="margin-bottom: 1em; font-weight: bold;">
+      {{ message }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
   {% endwith %}
-{% block content %}    
-    <h1>Welcome to FigDiary!</h1>
-    <p>
-      FigDiary is your personal space to jot down thoughts, memories, and daily experiences in a fun and colorful way. 
-      Whether you want to keep a private journal or just write for fun, FigDiary is here for you.
-    </p>
-    <p>
-      Join our community to start your diary journey. Already have an account? Log in to continue writing!
-    </p>
-    <div>
-      <a href="{{ url_for('login') }}"><button>Login</button></a>
-      <a href="{{ url_for('register') }}"><button>Register</button></a>
-    </div>
-{% endblock %}
+  {% block content %}
+  <h1>Welcome to FigDiary!</h1>
+  <p>
+    FigDiary is your personal space to jot down thoughts, memories, and daily experiences in a fun and colorful way.
+    Whether you want to keep a private journal or just write for fun, FigDiary is here for you.
+  </p>
+  <p>
+    Join our community to start your diary journey. Already have an account? Log in to continue writing!
+  </p>
+  <div>
+    <a href="{{ url_for('login') }}"><button>Login</button></a>
+    <a href="{{ url_for('register') }}"><button>Register</button></a>
+  </div>
+  {% endblock %}
 </body>
+
 </html>
 
 
 </body>
+
 </html>
