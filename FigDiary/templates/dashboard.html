@@ -1,78 +1,46 @@
 {% extends "base.html" %}
-{% block head %}
-{{ super() }} {# Inherits other style properties from base.html#}
-<style>
-  #entry-list {
-    list-style-type: none;
-    padding: 0;
-    margin-top: 30px;
-  }
+{% block title %}Your Dashboard{% endblock %}
 
-  #entry-list li {
-    background-color: #fff8dc;
-    border: 2px dashed #ffa07a;
-    padding: 15px;
-    margin-bottom: 10px;
-    font-family: Comic Sans MS, Comic Sans, cursive;
-    border-radius: 10px;
-    box-shadow: 2px 2px 5px #f4a460;
-    text-align: left;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    justify-content: space-between;
+{% block content %}
+  <h2>Welcome, {{ username }}!</h2>
 
-  }
-
-  #entry-list li::before {
-    content: "📓 ";
-    font-size: 1.2em;
-  }
-</style>
-{% endblock %}
-{% block content%}
-
-{#Create Entry#}
-<form action="/new-entry" method="post">
-  <label for="new-entry">Entry:</label>
-  <textarea name="new-entry" id="new-entry" placeholder="Enter your thoughts here:"></textarea>
-  <input type="text" name="tags" id="" placeholder="Enter Tags...">
-  <button type="submit">Add Entry</button>
-</form>
-<ul id="entry-list">
-  {# Search Form #}
-  <label for="search">Search</label>
-  <form action="/dashboard" method="post">
-    <input type="text" name="search" id="" placeholder="Search entry...">
+  <form method="post" action="/dashboard">
+    <input type="text" name="search" placeholder="Search entries..." />
     <button type="submit">Search</button>
   </form>
 
-  {# Read Entries #}
-  {% for entry in entries %}
-  <li class="entry">
-    <p>{{ entry.text }}</p>
-    <p>{{ entry.timestamp }}</p>
-    {% if entry.tags %}
-      <ul>
-      {% for tag in entry.tags %}
-        <a href="/dashboard?tag={{ tag }}"><span>#{{ tag }}</span></a>
-        <br>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {# Update Entry #}
-    <form action="/edit-entry/{{ loop.index0 }}" method="get"> 
-      <button type="submit">✏️</button>
-    </form>
-   {# Delete Entry #}
-    <form action="/delete-entry" method="post"> 
-      <input type="hidden" name="entry-id" value="{{ loop.index0 }}">
-      <button type="submit">🗑️</button>
-    </form>
-  </li>
-  {% endfor %}
-</ul>
+  <form method="post" action="/new-entry" style="margin-top: 2em;">
+    <textarea name="new-entry" rows="4" cols="50" placeholder="Write something..."></textarea><br>
+    <input type="text" name="tags" placeholder="Tags (comma separated)" />
+    <br>
+    <button type="submit">Add Entry</button>
+  </form>
 
-<a href="/logout"><button>Logout</button></a>
+  <ul style="list-style: none; padding: 0;">
+    {% for entry in entries %}
+      <li style="border: 1px solid #ccc; margin: 1em 0; padding: 1em; border-radius: 5px;">
+        <p><strong>{{ entry.timestamp }}</strong></p>
+        <p>{{ entry.text }}</p>
+
+        {% if entry.tags %}
+          <p>
+            {% for tag in entry.tags %}
+              <a href="/dashboard?tag={{ tag }}" class="button">#{{ tag }}</a>
+            {% endfor %}
+          </p>
+        {% endif %}
+
+        <form action="/edit-entry/{{ loop.index0 }}" method="get" style="display: inline;">
+          <button type="submit">Edit</button>
+        </form>
+
+        <form action="/delete-entry" method="post" style="display: inline;">
+          <input type="hidden" name="entry-id" value="{{ loop.index0 }}" />
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p><a href="/logout" class="button">Logout</a></p>
 {% endblock %}

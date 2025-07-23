@@ -1,79 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <title>FigDiary</title>
-  {% block head%}
+  <meta charset="UTF-8" />
+  <title>{% block title %}FigDiary{% endblock %}</title>
   <style>
     body {
-      background: #f9f871;
-      font-family: Comic Sans MS, Comic Sans, cursive;
+      background-color: #fffbea;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
       text-align: center;
-      margin-top: 10%;
     }
 
-    .joke {
-      font-size: 2em;
-      margin-bottom: 20px;
+    header {
+      background-color: #f4c542;
+      padding: 1em;
+      margin-bottom: 1em;
     }
 
-    .punchline {
-      font-size: 1.5em;
-      color: #ff6347;
-      margin-top: 20px;
+    .logo {
+      height: 50px;
     }
 
-    img {
-      margin-top: 30px;
-      width: 200px;
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1em;
     }
 
-    button {
-      background: #ffb347;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1em;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 30px;
+    .flash {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      font-weight: bold;
     }
 
-    button:hover {
-      background: #ff6347;
-      color: #fff;
-    }
-
-    .flash-ok {
+    .flash.ok {
       color: green;
-      font-weight: bold;
     }
 
-    .flash-failure,
-    .flash-error {
+    .flash.failure, .flash.error {
       color: red;
-      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 3em;
+      color: #999;
+      font-size: 0.9em;
+    }
+
+    a.button, button {
+      background: #f4c542;
+      border: none;
+      color: black;
+      padding: 0.5em 1em;
+      margin: 0.3em;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    a.button:hover, button:hover {
+      background-color: #d4a937;
     }
   </style>
-  {% endblock %}
 </head>
-
 <body>
-  <img src="{{ url_for('static', filename='logo.png') }}" alt="FigDiary Logo"
-    style="display: block; margin: 0 auto 30px auto; max-width: 100%; height: auto; width: 220px;">
-  {}
-  {% with messages = get_flashed_messages(with_categories=True) %}
-  {% if messages %}
-  <ul style="list-style: none; padding: 0;">
-    {% for category, message in messages %}
-    <li class="flash {{ category }}" style="margin-bottom: 1em; font-weight: bold;">
-      {{ message }}
-    </li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-  {% endwith %}
-  {% block content %}
+  <header>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="FigDiary Logo" class="logo" />
+    <h1>FigDiary</h1>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}
   <h1>Welcome to FigDiary!</h1>
   <p>
     FigDiary is your personal space to jot down thoughts, memories, and daily experiences in a fun and colorful way.
@@ -87,11 +94,11 @@
     <a href="{{ url_for('register') }}"><button>Register</button></a>
   </div>
   {% endblock %}
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 FigDiary</p>
+  </footer>
 </body>
-
-</html>
-
-
-</body>
-
 </html>
