@@ -1,0 +1,130 @@
+body,
+#dashboard-container {
+  background: #f3f6fb;
+  min-height: 100vh;
+}
+
+/* Center the entry-list and give it some max width */
+.entry-list {
+  max-width: 800px;
+  margin: 32px auto 0 auto;
+  padding: 0;
+  background: transparent;
+}
+
+.entry-item {
+  display: grid;
+  grid-template-columns: 48px 1fr auto 90px;
+  align-items: center;
+  width: 100%;
+  min-height: 110px;
+  background: #fff;
+  border-radius: 20px;
+  border-left: 6px solid #6a82fb;
+  box-shadow: 0 8px 32px rgba(106, 130, 251, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 28px;
+  padding: 0 24px;
+  gap: 18px;
+  position: relative;
+  transition: box-shadow 0.18s, border-left-color 0.18s, transform 0.18s;
+}
+
+.entry-item:hover {
+  box-shadow: 0 16px 40px rgba(106, 130, 251, 0.18), 0 4px 16px rgba(0, 0, 0, 0.10);
+  border-left-color: #fc5c7d;
+  transform: translateY(-2px) scale(1.012);
+}
+
+.entry-icon {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.entry-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+  padding: 12px 0;
+}
+
+.entry-text {
+  font-size: 1.1em;
+  color: #222;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  /* Show up to 3 lines */
+  -webkit-box-orient: vertical;
+}
+
+.entry-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  font-size: 0.8em;
+  padding: 3px 12px;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 600;
+  background: linear-gradient(90deg, #6a82fb, #fc5c7d);
+  margin-right: 4px;
+  margin-bottom: 2px;
+  opacity: 0.92;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+/* Keep your nth-child color cycling for tags */
+.tag:nth-child(1) {
+  background: #6a82fb;
+}
+
+.tag:nth-child(2) {
+  background: #fc5c7d;
+}
+
+.tag:nth-child(3) {
+  background: #45b649;
+}
+
+.tag:nth-child(4) {
+  background: #f7971e;
+}
+
+.tag:nth-child(5) {
+  background: #f857a6;
+}
+
+.tag:nth-child(6) {
+  background: #43cea2;
+}
+
+.tag:nth-child(7) {
+  background: #ff5858;
+}
+
+.tag:nth-child(8) {
+  background: #36d1c4;
+}
+
+.entry-image-container {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e3e8f0;
+  box-shadow: 0 2px 8px rgba(106, 130, 251, 0.13);
+}

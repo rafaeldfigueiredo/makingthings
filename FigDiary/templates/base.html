@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
   <title>{% block title %}FigDiary{% endblock %}</title>
   <style>
     body {
@@ -20,6 +21,14 @@
 
     .logo {
       height: 50px;
+    }
+
+    .entry-image {
+      max-width: 100%;
+      height: auto;
+      margin-top: 1em;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
 
     main {

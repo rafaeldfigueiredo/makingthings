@@ -1,46 +1,86 @@
 {% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% block title %}Your Dashboard{% endblock %}
+{% endblock %}
 
 {% block content %}
-  <h2>Welcome, {{ username }}!</h2>
+<div id="dashboard-container">
 
-  <form method="post" action="/dashboard">
+  <h2 id="dashboard-title">Welcome, {{ username }}!</h2>
+
+  <h4>Search:</h4>
+  <form id="search-form" method="post" action="/dashboard">
     <input type="text" name="search" placeholder="Search entries..." />
     <button type="submit">Search</button>
   </form>
 
-  <form method="post" action="/new-entry" style="margin-top: 2em;">
+  <h3>Add a New Entry:</h3>
+  <form id="new-entry-form" method="post" action="/new-entry" enctype="multipart/form-data">
     <textarea name="new-entry" rows="4" cols="50" placeholder="Write something..."></textarea><br>
-    <input type="text" name="tags" placeholder="Tags (comma separated)" />
+    <input type="file" name="image" id="">
+    <h4>Tags:</h4><input type="text" name="tags" placeholder="Tags (comma separated)" />
     <br>
     <button type="submit">Add Entry</button>
   </form>
 
-  <ul style="list-style: none; padding: 0;">
+  <h3>Sort By:</h3>
+  <form id="sort-form" method="get" action="/dashboard">
+    <select name="sort" onchange="this.form.submit()">
+      <option value="az" {% if selected_sort=='az' %}selected{% endif %}>A-Z</option>
+      <option value="za" {% if selected_sort=='za' %}selected{% endif %}>Z-A</option>
+      <option value="new" {% if selected_sort=='new' %}selected{% endif %}>Newest</option>
+      <option value="old" {% if selected_sort=='old' %}selected{% endif %}>Oldest</option>
+    </select>
+  </form>
+
+  <h3>Entries:</h3>
+  <ul class="entry-list">
     {% for entry in entries %}
-      <li style="border: 1px solid #ccc; margin: 1em 0; padding: 1em; border-radius: 5px;">
-        <p><strong>{{ entry.timestamp }}</strong></p>
-        <p>{{ entry.text }}</p>
+    <li class="entry-item">
+      <div class="entry-header">
+        <p class="entry-timestamp">{{ entry.timestamp }}</p>
 
-        {% if entry.tags %}
-          <p>
-            {% for tag in entry.tags %}
-              <a href="/dashboard?tag={{ tag }}" class="button">#{{ tag }}</a>
-            {% endfor %}
-          </p>
-        {% endif %}
+        <form action="/toggle-favorite/{{ entry.id }}" method="post" class="favorite-toggle-form">
+          <button class="favorite-button">{{ '⭐' if entry.favorite else '☆' }}</button>
+        </form>
+      </div>
 
-        <form action="/edit-entry/{{ loop.index0 }}" method="get" style="display: inline;">
+      <a href="/entry/{{ loop.index0 }}" class="entry-content">
+        <p class="entry-text{">{{ entry.text }}</p>
+      </a>
+
+      {% if entry.tags %}
+      <div class="entry-tags">
+        {% for tag in entry.tags %}
+        <a href="/dashboard?tag={{ tag }}" class="tag-link"><span class="tag">#{{ tag }}</span></a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if entry.image %}
+      <span class="entry-image-container">
+        <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image" class="entry-image">
+      </span>
+      {% endif %}
+
+
+      <div class="entry-actions">
+        <form action="/edit-entry/{{ loop.index0 }}" method="get">
           <button type="submit">Edit</button>
         </form>
-
-        <form action="/delete-entry" method="post" style="display: inline;">
+        <form action="/delete-entry" method="post">
           <input type="hidden" name="entry-id" value="{{ loop.index0 }}" />
           <button type="submit">Delete</button>
         </form>
-      </li>
+      </div>
+    </li>
     {% endfor %}
   </ul>
 
-  <p><a href="/logout" class="button">Logout</a></p>
+  <p><a href="/logout" class="button logout-link">Logout</a></p>
+
+</div>
 {% endblock %}
