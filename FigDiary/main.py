@@ -1,7 +1,7 @@
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
-from flask import Flask, flash, redirect,request,jsonify,render_template,session, url_for
+from flask import Flask, flash, redirect,request,render_template,session, url_for
 from functools import wraps
 import json
 
@@ -116,17 +116,16 @@ def new_entry(username):
     if tags:
         new_entry["tags"] = [tag.strip() for tag in tags.split(",")]
     if image and image.filename:
-        user_folder = os.path.join("static", username)
-        os.makedirs(user_folder,exist_ok=True)
-        
+        user_folder = os.path.join("static", "userImages", username)
+        os.makedirs(user_folder, exist_ok=True)
+
         timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         ext = os.path.splitext(image.filename)[1] or ".jpeg"
-        filename =  secure_filename(f"{timestamp}_{last_index}{ext}")
-        
-        image_path = os.path.join(user_folder,filename)
+        filename = secure_filename(f"{timestamp}_{last_index}{ext}")
+
+        image_path = os.path.join(user_folder, filename)
         image.save(image_path)
-        
-        new_entry["image"] = f"{username}/{filename}"
+        new_entry["image"] = f"userImages/{username}/{filename}"
         
     entries[username].append(new_entry)
     register_entries(entries)
