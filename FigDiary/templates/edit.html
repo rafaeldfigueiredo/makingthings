@@ -2,9 +2,16 @@
 
 {% block content %}
     <h2>Edit Entry</h2>
-    <form action="/edit-entry/{{ entry_id }}" method="post">
+    <form action="/edit-entry/{{ entry_id }}" method="post" enctype="multipart/form-data">
         <textarea name="text" > {{ entry["text"] }} </textarea>
+        {% if entry.image %}
+            <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image">
+        {% endif %}
+
+        <input type="file" name="new_image">
         <button type="submit">Update</button>
+    </form>
+
     </form>
     <a href="/dashboard"><button type="button">Go Back</button></a>
 {% endblock %}

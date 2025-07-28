@@ -131,7 +131,6 @@ def new_entry(username):
     register_entries(entries)
     return redirect("/dashboard")
     
-
 @app.route("/dashboard", methods=["GET","POST"])
 @username_required
 def dashboard(username):
@@ -202,12 +201,42 @@ def entry_detail(entry_id,username):
 def edit_entry(entry_id, username):
     full_list = load_entries()
     entry_to_edit = full_list.get(username, [])
-
+    
+    
     if request.method == "POST":
         new_content = request.form.get("text", "").strip()
+        image = request.files.get("new_image")
+        
         if 0 <= entry_id < len(entry_to_edit):
+            old_image_path = entry_to_edit[entry_id].get("image")
+            if old_image_path:
+                full_old_path = os.path.join("static",old_image_path)
+                if os.path.exists(full_old_path):
+                    os.remove(full_old_path)
+            
+            if image and image.filename:
+                user_folder = os.path.join("static", "userImages", username)
+                os.makedirs(user_folder, exist_ok=True)  # Make sure folder exists
+
+                # Always save with JPEG unless extension exists and is valid
+                ext = os.path.splitext(image.filename)[1].lower()
+                if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
+                    ext = ".jpeg"
+
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                filename = secure_filename(f"{timestamp}_{entry_id}{ext}")
+                image_path = os.path.join(user_folder, filename)
+                
+                # Save the image
+                image.save(image_path)
+
+                # Update the entry image path
+                entry_to_edit[entry_id]["image"] = f"userImages/{username}/{filename}"
+
+            
             entry_to_edit[entry_id]["text"] = new_content
             entry_to_edit[entry_id]["timestamp"] = datetime.now().strftime("%H:%M:%S")
+            
             register_entries(full_list)
             flash("Edit successful!", category="ok")
             return redirect("/dashboard")
@@ -221,25 +250,28 @@ def edit_entry(entry_id, username):
 @username_required
 def delete_entry(username):
     entry_index = int(request.form.get("entry-id"))
-    if username:
-        try:
-            entries = load_entries()
-            for entry in entries[username]:
-                image_path = entry.get("image")
-                if image_path:
-                    full_path = os.path.join("static",image_path)
-                    if os.path.exists(full_path):
-                        os.remove(full_path)
-            entries[username].pop(entry_index)
-            register_entries(entries)
-            flash("Deleted!",category="ok")
-            return redirect("/dashboard")
-        except IndexError:
-            flash("Invalid entry index", category="error")
-            return redirect("/dashboard")
-    else:
-        flash("You need to login",category="error")
-        return redirect("/login")
+    entries = load_entries()
+    
+    try:
+        entry = entries[username][entry_index]
+        
+        # Only delete the image from this entry
+        image_path = entry.get("image")
+        if image_path:
+            full_path = os.path.join("static", image_path)
+            if os.path.exists(full_path):
+                os.remove(full_path)
+
+        # Now remove the entry from the user's list
+        entries[username].pop(entry_index)
+        register_entries(entries)
+        flash("Deleted!", category="ok")
+        return redirect("/dashboard")
+
+    except (IndexError, KeyError):
+        flash("Invalid entry index", category="error")
+        return redirect("/dashboard")
+
 
 ## == Ignition == ##
 if __name__ == "__main__":

@@ -62,10 +62,9 @@
 
       {% if entry.image %}
       <span class="entry-image-container">
-        <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image" class="entry-image">
+        <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image">
       </span>
       {% endif %}
-
 
       <div class="entry-actions">
         <form action="/edit-entry/{{ loop.index0 }}" method="get">
