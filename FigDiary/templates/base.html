@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
@@ -19,8 +20,22 @@
       margin-bottom: 1em;
     }
 
+    #pageheader {
+      display: inline-flex;
+      /* So the logo and title sit next to each other */
+      align-items: center;
+      /* Vertically align them */
+      text-decoration: none;
+      /* Optional: remove underline */
+      width: auto;
+      /* Prevent it from spanning full width */
+    }
+
     .logo {
-      height: 50px;
+      height: 100px;
+      /* Or whatever size looks good */
+      margin-right: 10px;
+      /* Space between logo and title */
     }
 
     .entry-image {
@@ -48,7 +63,8 @@
       color: green;
     }
 
-    .flash.failure, .flash.error {
+    .flash.failure,
+    .flash.error {
       color: red;
     }
 
@@ -58,7 +74,8 @@
       font-size: 0.9em;
     }
 
-    a.button, button {
+    a.button,
+    button {
       background: #f4c542;
       border: none;
       color: black;
@@ -69,40 +86,39 @@
       text-decoration: none;
     }
 
-    a.button:hover, button:hover {
+    a.button:hover,
+    button:hover {
       background-color: #d4a937;
     }
   </style>
 </head>
+
 <body>
   <header>
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="FigDiary Logo" class="logo" />
-    <h1>FigDiary</h1>
+    {% if username %}
+    <a href="/dashboard" id="pageheader">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="FigDiary Logo" class="logo" />
+    </a>
+    {% else %}
+    <a href="/" id="pageheader">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="FigDiary Logo" class="logo" />
+    </a>
+    {% endif %}
+
   </header>
 
   <main>
     {% with messages = get_flashed_messages(with_categories=True) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
 
     {% block content %}
-  <h1>Welcome to FigDiary!</h1>
-  <p>
-    FigDiary is your personal space to jot down thoughts, memories, and daily experiences in a fun and colorful way.
-    Whether you want to keep a private journal or just write for fun, FigDiary is here for you.
-  </p>
-  <p>
-    Join our community to start your diary journey. Already have an account? Log in to continue writing!
-  </p>
-  <div>
-    <a href="{{ url_for('login') }}"><button>Login</button></a>
-    <a href="{{ url_for('register') }}"><button>Register</button></a>
-  </div>
-  {% endblock %}
+
+    {% endblock %}
 
   </main>
 
@@ -110,4 +126,5 @@
     <p>&copy; 2025 FigDiary</p>
   </footer>
 </body>
+
 </html>

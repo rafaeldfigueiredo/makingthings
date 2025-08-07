@@ -37,19 +37,21 @@
   </form>
 
   <h3>Entries:</h3>
-  <ul class="entry-list">
-    {% for entry in entries %}
+
+{% if entries %}
+<ul class="entry-list">
+  {% for entry in entries %}
     <li class="entry-item">
+      <!-- your existing entry rendering here -->
       <div class="entry-header">
         <p class="entry-timestamp">{{ entry.timestamp }}</p>
-
         <form action="/toggle-favorite/{{ entry.id }}" method="post" class="favorite-toggle-form">
           <button class="favorite-button">{{ '⭐' if entry.favorite else '☆' }}</button>
         </form>
       </div>
 
-      <a href="/entry/{{ loop.index0 }}" class="entry-content">
-        <p class="entry-text{">{{ entry.text }}</p>
+      <a href="{{ url_for('entry_detail', entry_id=entry.id) }}" class="entry-content">
+        <p class="entry-text">{{ entry.text }}</p>
       </a>
 
       {% if entry.tags %}
@@ -67,17 +69,21 @@
       {% endif %}
 
       <div class="entry-actions">
-        <form action="/edit-entry/{{ loop.index0 }}" method="get">
+        <form action="{{ url_for('edit_entry', entry_id=entry.id) }}" method="get">
           <button type="submit">Edit</button>
         </form>
-        <form action="/delete-entry" method="post">
-          <input type="hidden" name="entry-id" value="{{ loop.index0 }}" />
+        <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" method="post">
           <button type="submit">Delete</button>
         </form>
       </div>
     </li>
-    {% endfor %}
-  </ul>
+  {% endfor %}
+</ul>
+{% else %}
+  <h2>No Entries!</h2>
+  <h3>Start Writing!</h3>
+{% endif %}
+
 
   <p><a href="/logout" class="button logout-link">Logout</a></p>
 

@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
-{% block punchline %}
-{{ username }}
+{% block content %}
+<h1>Welcome to FigDiary!</h1>
+  <p>
+    FigDiary is your personal space to jot down thoughts, memories, and daily experiences in a fun and colorful way.
+    Whether you want to keep a private journal or just write for fun, FigDiary is here for you.
+  </p>
+  <p>
+    Join our community to start your diary journey. Already have an account? Log in to continue writing!
+  </p>
+  <div>
+    <a href="{{ url_for('login') }}"><button>Login</button></a>
+    <a href="{{ url_for('register') }}"><button>Register</button></a>
+  </div>
+
 {% endblock %}

@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Edit Entry</h2>
-    <form action="/edit-entry/{{ entry_id }}" method="post" enctype="multipart/form-data">
+    <form action="/edit_entry/{{ entry_id }}" method="post" enctype="multipart/form-data">
         <textarea name="text" > {{ entry["text"] }} </textarea>
         {% if entry.image %}
             <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image">

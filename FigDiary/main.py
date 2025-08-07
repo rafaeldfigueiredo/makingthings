@@ -1,40 +1,60 @@
 from datetime import datetime
 from werkzeug.utils import secure_filename
-import os
 from flask import Flask, flash, redirect,request,render_template,session, url_for
 from functools import wraps
+import os
 import json
 
 app = Flask(__name__)
 app.secret_key = "heyitsmegoku"
-
-data_file = "data/users.json" 
+user_file = "data/users.json" 
 entry_file = "data/entries.json"
+TIMEFORMAT = "%H:%M:%S"
 # ===   === Getter/Setter functions  ===  === #
-def load_users():
-    with open(data_file, "r") as f:
-        return json.load(f)
-
-def register_users(userlist):
-    with open(data_file, "w") as f:
-        return json.dump(userlist,f)
-
-def load_entries():
+# Generic JSON files
+def read_json(datafile):
     try:
-        with open(entry_file, "r") as f:
-            data = json.load(f)
-            if isinstance(data,dict):
-                return data
-            else:
-                return {}
+        with open(datafile,"r") as f:
+            return json.load(f)
     except FileNotFoundError:
         return {}
-        
-def register_entries(entrylist):
-    with open(entry_file, "w") as f:
-        return json.dump(entrylist,f)
+def write_json(datafile,newdata):
+    with open(datafile,"w") as file:
+        return json.dump(newdata, file)
 
-# === DecoFunc for auth === #
+# Load specific elements
+def load_users():
+    return read_json(user_file)
+def save_users(data):
+    write_json(user_file,data)
+
+def load_entries():
+    data = read_json(entry_file)
+    if isinstance(data,dict):
+        for user_entries in data.values():
+            for entry in user_entries:
+                entry.setdefault("favorite", False)
+                entry.setdefault("private", False)
+                entry.setdefault("mood", "")
+        return data
+    return {}
+def save_entries(data):
+    write_json(entry_file,data)
+
+def get_user_entries(username):
+    all_entries = load_entries()
+    return all_entries.get(username,[]), all_entries
+def get_entry_by_id(username, entry_id):
+    user_entries, _ = get_user_entries(username)
+    return next((e for e in user_entries if e.get("id") == entry_id), None)
+def get_entry_with_parent(username, entry_id):
+    '''This is for retrieval of whole list so it can get written in memory'''
+    user_entries, all_entries = get_user_entries(username)
+    entry = next((e for e in user_entries if e.get("id") == entry_id), None)
+    return entry, user_entries, all_entries
+
+
+# === DecoFunc === #
 def username_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -64,7 +84,7 @@ def login():
             return redirect(url_for("dashboard"))
         else:
             flash("Something went wrong!", category="error")
-            return render_template("login.html")
+            return redirect("/login")
     return render_template("login.html")
 
 @app.get("/logout")
@@ -76,10 +96,18 @@ def logout():
 def register():
     if request.method == "POST":
         username = request.form.get("username")
-        if username not in [user["name"] for user in load_users()]:
-            userlist = load_users()
-            userlist.append({"name": username})
-            register_users(userlist)
+        if username == "":
+            flash("You can't register with a blank name",category="error")
+            return redirect("/register")
+        users = load_users()
+        entries = load_entries()
+        if username not in [user["name"] for user in users]:
+            users.append({"name":username})
+            save_users(users)
+
+            entries[username] = []
+            save_entries(entries)
+
             session["username"] = username
             flash(message="Registered successfully!", category="ok")
             return redirect(url_for("dashboard"))
@@ -96,6 +124,7 @@ def new_entry(username):
     content = request.form.get("new-entry","").strip()
     tags = request.form.get("tags","").strip()
     image = request.files.get("image")
+    moods = request.form.get("mood")
     
     if not content:
         flash("You cannot post blank entries!")
@@ -110,7 +139,8 @@ def new_entry(username):
         "id":last_index,
         "text":content,
         "timestamp" : datetime.now().strftime("%H:%M:%S"),
-        "favorite":False
+        "favorite":False,
+        "mood":moods
     }
     
     if tags:
@@ -128,150 +158,152 @@ def new_entry(username):
         new_entry["image"] = f"userImages/{username}/{filename}"
         
     entries[username].append(new_entry)
-    register_entries(entries)
+    save_entries(entries)
     return redirect("/dashboard")
     
-@app.route("/dashboard", methods=["GET","POST"])
+@app.route("/dashboard", methods=["GET", "POST"])
 @username_required
 def dashboard(username):
-    entries = load_entries()
+    user_entries, _ = get_user_entries(username)
     display_entries = []
-    if request.method == "POST":
-        query = request.form.get("search")        
-        for entry in entries[username]:
-            if query.lower() in entry["text"].lower():
-                display_entries.append(entry)
-                print(display_entries)
-            flash("No results found!")
-            return redirect("/dashboard")
-        return render_template("dashboard.html",username=username, entries=display_entries)
-    elif request.method == "GET":
-        get_tags = request.args.get("tag")
-        get_sorting = request.args.get("sort")
-        user_entries = entries.get(username, [])
-        if get_sorting:
-            match get_sorting:
-                case "az":
-                    display_entries = sorted(user_entries, key=lambda e: e["text"].lower())
-                case "za":
-                    display_entries = sorted(user_entries, key=lambda e: e["text"].lower(), reverse=True)
-                case "new":
-                    display_entries = sorted(user_entries, key=lambda e: datetime.strptime(e["timestamp"], "%H:%M:%S"), reverse=True)
-                case "old":
-                    display_entries = sorted(user_entries, key=lambda e: datetime.strptime(e["timestamp"], "%H:%M:%S"))
-                case _:
-                    flash("Something went wrong!")
-                    return render_template("login.html"), 401
-            return render_template("dashboard.html", username=username, entries=display_entries,selected_sort=get_sorting)
 
-        if get_tags:
-            for entry in entries[username]:
-                if get_tags in entry.get("tags",[]):
-                    display_entries.append(entry)
-            return render_template("dashboard.html",username=username, entries=display_entries)
-        if username not in entries:
-            entries[username] = []
-            register_entries(entries)
-        for entry in entries[username]:
-            display_entries.append(entry)
+    if request.method == "POST":
+        query = request.form.get("search", "").lower()
+        display_entries = [
+            entry for entry in user_entries if query in entry["text"].lower()
+        ]
+        if not display_entries:
+            flash("No results found!")
         return render_template("dashboard.html", username=username, entries=display_entries)
 
-@app.post("/toggle-favorite/<int:entry_id>")
-@username_required
-def favorite_entry(username,entry_id):
-    entry_id = entry_id
-    full_list = load_entries()
-    user_data = full_list.get(username,[])
-    for entry in user_data:
-        if entry["id"] == entry_id:
-            entry["favorite"] = not entry.get("favorite",False)
-            break
-    register_entries(full_list)
-    return redirect("/dashboard")
+    get_tags = request.args.get("tag")
+    get_sorting = request.args.get("sort")
+
+    if get_sorting:
+        match get_sorting:
+            case "az":
+                display_entries = sorted(user_entries, key=lambda e: e["text"].lower())
+            case "za":
+                display_entries = sorted(user_entries, key=lambda e: e["text"].lower(), reverse=True)
+            case "new":
+                display_entries = sorted(user_entries, key=lambda e: datetime.strptime(e["timestamp"], "%H:%M:%S"), reverse=True)
+            case "old":
+                display_entries = sorted(user_entries, key=lambda e: datetime.strptime(e["timestamp"], "%H:%M:%S"))
+            case _:
+                flash("Something went wrong!")
+                return render_template("login.html"), 401
+        return render_template("dashboard.html", username=username, entries=display_entries, selected_sort=get_sorting)
+
+    if get_tags:
+        display_entries = [e for e in user_entries if get_tags in e.get("tags", [])]
+        return render_template("dashboard.html", username=username, entries=display_entries)
+
+    # Default: show all entries
+    display_entries = user_entries
+    return render_template("dashboard.html", username=username, entries=display_entries)
 
 @app.get("/entry/<int:entry_id>")
 @username_required
-def entry_detail(entry_id,username):
-    entries = load_entries()
-    display_entry = entries[username][entry_id]
-    return render_template("entry-detail.html",entry=display_entry,id=entry_id)
+def entry_detail(username,entry_id):
+    user_entries, _ = get_user_entries(username)
+    display_entry = next((entry for entry in user_entries if entry.get("id") == entry_id),None)
+    if display_entry is None:
+        flash("Entry not found", category="error")
+        return redirect("/dashboard")
+    return render_template("entry-detail.html", entry=display_entry, id=entry_id)
 
-@app.route("/edit-entry/<int:entry_id>", methods=["GET", "POST"])
+@app.route("/edit_entry/<int:entry_id>", methods=["GET", "POST"])
 @username_required
-def edit_entry(entry_id, username):
-    full_list = load_entries()
-    entry_to_edit = full_list.get(username, [])
+def edit_entry(username, entry_id):
+    entry,user_entries,all_entries = get_entry_with_parent(username, entry_id)
     
-    
+    if not entry:
+        flash("Invalid entry ID", category="error")
+        return redirect("/dashboard")
+
+
     if request.method == "POST":
         new_content = request.form.get("text", "").strip()
         image = request.files.get("new_image")
-        
-        if 0 <= entry_id < len(entry_to_edit):
-            old_image_path = entry_to_edit[entry_id].get("image")
-            if old_image_path:
-                full_old_path = os.path.join("static",old_image_path)
-                if os.path.exists(full_old_path):
-                    os.remove(full_old_path)
-            
-            if image and image.filename:
-                user_folder = os.path.join("static", "userImages", username)
-                os.makedirs(user_folder, exist_ok=True)  # Make sure folder exists
 
-                # Always save with JPEG unless extension exists and is valid
-                ext = os.path.splitext(image.filename)[1].lower()
-                if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
-                    ext = ".jpeg"
+        if new_content:
+            entry["text"] = new_content
 
-                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                filename = secure_filename(f"{timestamp}_{entry_id}{ext}")
-                image_path = os.path.join(user_folder, filename)
-                
-                # Save the image
-                image.save(image_path)
+        if image and image.filename:
+            user_folder = os.path.join("static", "userImages", username)
+            os.makedirs(user_folder, exist_ok=True)
 
-                # Update the entry image path
-                entry_to_edit[entry_id]["image"] = f"userImages/{username}/{filename}"
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            ext = os.path.splitext(image.filename)[1] or ".jpeg"
+            filename = secure_filename(f"{timestamp}_{entry_id}{ext}")
+            new_path = os.path.join(user_folder, filename)
 
-            
-            entry_to_edit[entry_id]["text"] = new_content
-            entry_to_edit[entry_id]["timestamp"] = datetime.now().strftime("%H:%M:%S")
-            
-            register_entries(full_list)
-            flash("Edit successful!", category="ok")
-            return redirect("/dashboard")
-    elif request.method == "GET":
-        entry = entry_to_edit[entry_id]
-        return render_template("edit.html", entry=entry, entry_id=entry_id)
-    flash("Something went wrong!",category="error")
-    return redirect("/dashboard")
-        
-@app.post("/delete-entry")
+            try:
+                image.save(new_path)
+                old_image_path = entry.get("image")
+                if old_image_path:
+                    full_old_path = os.path.join("static", old_image_path)
+                    if os.path.exists(full_old_path):
+                        os.remove(full_old_path)
+                entry["image"] = f"userImages/{username}/{filename}"
+            except Exception as e:
+                flash("Image upload failed!", category="error")
+                print("Error saving image:", e)
+                return redirect("/dashboard")
+
+        entry["timestamp"] = datetime.now().strftime("%H:%M:%S")
+        save_entries(all_entries)
+
+        flash("Entry updated!", category="ok")
+        return redirect("/dashboard")
+
+    return render_template("edit.html", entry=entry, entry_id=entry_id)
+
+@app.post("/toggle-favorite/<int:entry_id>")
 @username_required
-def delete_entry(username):
-    entry_index = int(request.form.get("entry-id"))
+def favorite_entry(username, entry_id):
+    entries, full_list = get_user_entries(username)
+
+    for entry in entries:
+        if entry.get("id") == entry_id:
+            entry["favorite"] = not entry.get("favorite", False)
+
+    save_entries(full_list)
+    return redirect("/dashboard")
+
+@app.post("/toggle-private/<int:entry_id>")
+@username_required
+def private_entry(username,entry_id):
+    entries, full_list = get_user_entries(username)    
+    for entry in entries:
+        if entry.get("id") == entry_id:
+            entry["private"] = not entry.get("private",False)
+            break
+    save_entries(full_list)
+    return redirect("/dashboard")
+
+@app.post("/delete_entry/<int:entry_id>")
+@username_required
+def delete_entry(username, entry_id):
+    entry = get_entry_by_id(username, entry_id)
+    if entry is None:
+        flash("Entry not found", category="error")
+        return redirect("/dashboard")
+
     entries = load_entries()
-    
-    try:
-        entry = entries[username][entry_index]
-        
-        # Only delete the image from this entry
-        image_path = entry.get("image")
-        if image_path:
-            full_path = os.path.join("static", image_path)
-            if os.path.exists(full_path):
-                os.remove(full_path)
+    user_entries = entries.get(username, [])
 
-        # Now remove the entry from the user's list
-        entries[username].pop(entry_index)
-        register_entries(entries)
-        flash("Deleted!", category="ok")
-        return redirect("/dashboard")
+    image_relative_path = entry.get("image")
+    if image_relative_path:
+        image_full_path = os.path.join("static", image_relative_path)
+        if os.path.exists(image_full_path):
+            os.remove(image_full_path)
 
-    except (IndexError, KeyError):
-        flash("Invalid entry index", category="error")
-        return redirect("/dashboard")
+    user_entries.remove(entry)
+    save_entries(entries)
 
+    flash("Entry deleted!", category="ok")
+    return redirect("/dashboard")
 
 ## == Ignition == ##
 if __name__ == "__main__":

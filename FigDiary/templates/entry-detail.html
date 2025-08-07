@@ -9,8 +9,11 @@
 
 {% block content %}
 <div class="entry-detail">
+    <div class="back-link">
+        <a href="/dashboard" class="button">Go Back</a>
+    </div>
+
     <div class="entry-detail-content">
-        <p class="entry-timestamp"><strong>{{ entry.timestamp }}</strong></p>
         <p class="entry-text">{{ entry.text }}</p>
         {% if entry.tags %}
         <div class="entry-tags">
@@ -19,23 +22,21 @@
             {% endfor %}
         </div>
         {% endif %}
-        <div class="entry-actions">
-            <form action="/edit-entry/{{ id }}" method="get">
-                <button type="submit">Edit</button>
-            </form>
-            <form action="/delete-entry" method="post">
-                <input type="hidden" name="entry-id" value="{{ id }}" />
-                <button type="submit">Delete</button>
-            </form>
+        {% if entry.image %}
+        <div class="entry-detail-image-container">
+            <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image" class="entry-image">
         </div>
-        <div class="back-link">
-            <a href="/dashboard" class="button">Go Back</a>
-        </div>
+        {% endif %}
     </div>
-    {% if entry.image %}
-    <div class="entry-detail-image-container">
-        <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image" class="entry-image">
+
+    <div class="entry-actions">
+        <form action="/edit_entry/{{ entry.id }}" method="get">
+            <button type="submit">Edit</button>
+        </form>
+        <form action="/delete_entry/{{ entry.id }}" method="post">
+            <input type="hidden" name="entry-id" value="{{ id }}" />
+            <button type="submit">Delete</button>
+        </form>
     </div>
-    {% endif %}
 </div>
 {% endblock %}
