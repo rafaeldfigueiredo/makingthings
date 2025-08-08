@@ -2,57 +2,12 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, redirect,request,render_template,session, url_for
 from functools import wraps
+from models import *
 import os
-import json
 
 app = Flask(__name__)
 app.secret_key = "heyitsmegoku"
-user_file = "data/users.json" 
-entry_file = "data/entries.json"
 TIMEFORMAT = "%H:%M:%S"
-# ===   === Getter/Setter functions  ===  === #
-# Generic JSON files
-def read_json(datafile):
-    try:
-        with open(datafile,"r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-def write_json(datafile,newdata):
-    with open(datafile,"w") as file:
-        return json.dump(newdata, file)
-
-# Load specific elements
-def load_users():
-    return read_json(user_file)
-def save_users(data):
-    write_json(user_file,data)
-
-def load_entries():
-    data = read_json(entry_file)
-    if isinstance(data,dict):
-        for user_entries in data.values():
-            for entry in user_entries:
-                entry.setdefault("favorite", False)
-                entry.setdefault("private", False)
-                entry.setdefault("mood", "")
-        return data
-    return {}
-def save_entries(data):
-    write_json(entry_file,data)
-
-def get_user_entries(username):
-    all_entries = load_entries()
-    return all_entries.get(username,[]), all_entries
-def get_entry_by_id(username, entry_id):
-    user_entries, _ = get_user_entries(username)
-    return next((e for e in user_entries if e.get("id") == entry_id), None)
-def get_entry_with_parent(username, entry_id):
-    '''This is for retrieval of whole list so it can get written in memory'''
-    user_entries, all_entries = get_user_entries(username)
-    entry = next((e for e in user_entries if e.get("id") == entry_id), None)
-    return entry, user_entries, all_entries
-
 
 # === DecoFunc === #
 def username_required(func):
