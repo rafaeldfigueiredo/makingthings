@@ -3,8 +3,9 @@
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-{% block title %}Your Dashboard{% endblock %}
 {% endblock %}
+
+{% block title %}Your Dashboard{% endblock %}
 
 {% block content %}
 <div id="dashboard-container">
@@ -29,10 +30,10 @@
   <h3>Sort By:</h3>
   <form id="sort-form" method="get" action="/dashboard">
     <select name="sort" onchange="this.form.submit()">
-      <option value="az" {% if selected_sort=='az' %}selected{% endif %}>A-Z</option>
-      <option value="za" {% if selected_sort=='za' %}selected{% endif %}>Z-A</option>
-      <option value="new" {% if selected_sort=='new' %}selected{% endif %}>Newest</option>
-      <option value="old" {% if selected_sort=='old' %}selected{% endif %}>Oldest</option>
+      <option value="az" {% if selected_sort == 'az' %}selected{% endif %}>A-Z</option>
+      <option value="za" {% if selected_sort == 'za' %}selected{% endif %}>Z-A</option>
+      <option value="new" {% if selected_sort == 'new' %}selected{% endif %}>Newest</option>
+      <option value="old" {% if selected_sort == 'old' %}selected{% endif %}>Oldest</option>
     </select>
   </form>
 
@@ -42,7 +43,6 @@
 <ul class="entry-list">
   {% for entry in entries %}
     <li class="entry-item">
-      <!-- your existing entry rendering here -->
       <div class="entry-header">
         <p class="entry-timestamp">{{ entry.timestamp }}</p>
         <form action="/toggle-favorite/{{ entry.id }}" method="post" class="favorite-toggle-form">
@@ -79,13 +79,10 @@
     </li>
   {% endfor %}
 </ul>
-{% else %}
+{% else %} {# Else for No Entries#}
   <h2>No Entries!</h2>
   <h3>Start Writing!</h3>
 {% endif %}
-
-
   <p><a href="/logout" class="button logout-link">Logout</a></p>
-
 </div>
 {% endblock %}

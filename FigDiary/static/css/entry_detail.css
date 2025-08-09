@@ -1,73 +1,115 @@
 .entry-detail {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.entry-title {
+    margin-bottom: 0.25rem;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+.timestamp {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.entry-body {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
-.back-link {
-
-    align-self: flex-start;
-    margin-top: 20px;
+.entry-image img {
+    width: 500px;
+    height: 300px;
+    object-fit: cover; /* crops but keeps aspect ratio */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.back-link a.button {
-    background-color: #ff8c66;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
+
+.entry-text {
+            width: 80%;
+            display: flex;
+            justify-content: flex-start; /* Aligns the bubble to the left */
+        }
+
+        /* The styling for the message bubble itself */
+        .entry-text p {
+            /* The core bubble styling */
+            height: fit-content;
+            
+            background-color: #ffffff; /* White background */
+            color: #000000;         /* Black text color */
+            font-weight: bold;      /* Bold font */
+            padding: 12px 16px;     /* Space inside the bubble */
+            border-radius: 18px;    /* Rounded corners */
+            border:1px solid black;
+            /* Ensures the bubble is only as wide as the text content */
+            max-width: 75%;
+            width: fit-content;
+
+            /* A subtle shadow to give it a "popped out" look */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+.mood span {
     font-weight: bold;
-    display: block;
+    color: #444;
 }
 
-.entry-detail-content {
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.tags {
+    margin-top: 0.5rem;
 }
 
-.entry-detail-content .entry-text {
-
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.entry-detail-image-container {
-    background-color: yellow;
-
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    width: 25vh;
-    height: 25vh;
-}
-
-.entry-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+.tag {
+    display: inline-block;
+    background: #f0f0f0;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.85rem;
+    margin-right: 0.3rem;
 }
 
 .entry-actions {
-
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-self: flex-start;
-    margin-top: 20px;
+    gap: 0.5rem;
 }
 
-.entry-actions button {
-    background-color: #0000ff;
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: #007bff;
     color: white;
-    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    width: 120px;
-    text-align: center;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+.btn.secondary {
+    background: #6c757d;
+}
+
+.btn.secondary:hover {
+    background: #5a6268;
+}
+
+.btn.danger {
+    background: #dc3545;
+    padding: 20px;
+}
+
+.btn.danger:hover {
+    background: #c82333;
 }

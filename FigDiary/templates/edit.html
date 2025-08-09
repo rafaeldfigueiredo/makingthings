@@ -1,12 +1,17 @@
 {% extends "base.html" %}
-
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/entry_detail.css') }}">
+{% endblock head %}
 {% block content %}
     <h2>Edit Entry</h2>
     <form action="/edit_entry/{{ entry_id }}" method="post" enctype="multipart/form-data">
         <textarea name="text" > {{ entry["text"] }} </textarea>
+        <div class="entry-image">
         {% if entry.image %}
             <img src="{{ url_for('static', filename=entry.image) }}" alt="entry image">
         {% endif %}
+        </div>
 
         <input type="file" name="new_image">
         <button type="submit">Update</button>

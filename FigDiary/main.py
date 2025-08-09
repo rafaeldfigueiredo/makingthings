@@ -5,6 +5,8 @@ from functools import wraps
 from models import *
 import os
 
+from utils import filter_entries, sort_entries
+
 app = Flask(__name__)
 app.secret_key = "heyitsmegoku"
 TIMEFORMAT = "%H:%M:%S"
@@ -120,42 +122,24 @@ def new_entry(username):
 @username_required
 def dashboard(username):
     user_entries, _ = get_user_entries(username)
-    display_entries = []
+    user_entries = [ entry for entry in user_entries if isinstance(entry,dict)]
+        
+    sort_key = request.args.get("sort","az")
+    search_query = request.form.get("search", "").lower() if request.method == "POST" else None
+    tag = request.args.get("tag")
 
-    if request.method == "POST":
-        query = request.form.get("search", "").lower()
-        display_entries = [
-            entry for entry in user_entries if query in entry["text"].lower()
-        ]
-        if not display_entries:
-            flash("No results found!")
-        return render_template("dashboard.html", username=username, entries=display_entries)
+    sorted_entries = sort_entries(user_entries,sort_key)
+    filtered_entries = filter_entries(sorted_entries,search_query,tag)
 
-    get_tags = request.args.get("tag")
-    get_sorting = request.args.get("sort")
-
-    if get_sorting:
-        match get_sorting:
-            case "az":
-                display_entries = sorted(user_entries, key=lambda e: e["text"].lower())
-            case "za":
-                display_entries = sorted(user_entries, key=lambda e: e["text"].lower(), reverse=True)
-            case "new":
-                display_entries = sorted(user_entries, key=lambda e: datetime.strptime(e["timestamp"], "%H:%M:%S"), reverse=True)
-            case "old":
-                display_entries = sorted(user_entries, key=lambda e: datetime.strptime(e["timestamp"], "%H:%M:%S"))
-            case _:
-                flash("Something went wrong!")
-                return render_template("login.html"), 401
-        return render_template("dashboard.html", username=username, entries=display_entries, selected_sort=get_sorting)
-
-    if get_tags:
-        display_entries = [e for e in user_entries if get_tags in e.get("tags", [])]
-        return render_template("dashboard.html", username=username, entries=display_entries)
-
-    # Default: show all entries
-    display_entries = user_entries
-    return render_template("dashboard.html", username=username, entries=display_entries)
+    if request.method == "POST" and search_query and not filtered_entries:
+        flash("No result founds",category="error")
+    
+    return render_template(
+        "dashboard.html", 
+        username=username, 
+        entries=filtered_entries,
+        selected_sort=sort_key
+        )
 
 @app.get("/entry/<int:entry_id>")
 @username_required

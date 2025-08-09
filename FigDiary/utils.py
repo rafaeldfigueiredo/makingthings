@@ -18,13 +18,9 @@ def sort_entries(entries, sort_key):
 
 
 def filter_entries(entries, search_query=None, tag=None):
-    # Keep only valid dicts with an id key
-    entries = [e for e in entries if isinstance(e, dict) and "id" in e]
-
     filtered = entries
     if search_query:
         filtered = [entry for entry in filtered if search_query in entry["text"].lower()]
     if tag:
-        filtered = [e for e in filtered if tag in e.get("tags", [])]
-    
+        filtered = [e for e in filtered if tag in e.get("tags", [])]    
     return filtered
