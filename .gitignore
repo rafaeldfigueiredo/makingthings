@@ -1,3 +1,50 @@
 node_modules
 .venv
 .env
+
+### Operating System Files ###
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+### Editor & IDE Files ###
+# Visual Studio Code
+.vscode/
+# JetBrains (IntelliJ, PyCharm, etc.)
+.idea/
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+# Vim
+*.swp
+*.swo
+# Eclipse
+.classpath
+.project
+.settings/
+
+### Dependencies & Build Artifacts ###
+# Node.js
+node_modules/
+# Python
+__pycache__/
+*.pyc
+*.pyd
+.Python
+
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+*.swp
+*.swpx
+
+### Configuration & Secret Files ###
+# Environment variables
+.env
+# Project-specific config that shouldn't be committed
+config.local.json
+config.dev.json
+*.local
+*.secret
