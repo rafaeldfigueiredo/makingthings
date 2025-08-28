@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 def sort_entries(entries, sort_key):
     if not sort_key:
@@ -24,3 +25,10 @@ def filter_entries(entries, search_query=None, tag=None):
     if tag:
         filtered = [e for e in filtered if tag in e.get("tags", [])]    
     return filtered
+
+def save_image(username,image,entry_id):
+    user_folder = os.path.join("static","userImages",username)
+    if os.makedirs(user_folder,exists_ok=True):
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        ext = os.path.splitext(image.filename)[1] or ".jpeg"
+        imagefile = f"{timestamp}_{entry_id}{ext}"
