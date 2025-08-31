@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 from events.exceptions import EventNotFound
+=======
+>>>>>>> 06e0675f031124a484bfee8a756d804cb93926aa
 from events.repos import SqliteEventRepository
 from events.database import db_session
 from events.services import CalendarService
@@ -39,12 +42,20 @@ def menu():
           print("\nNo events!")
       case '5': # Delete event
         choice = int(input("\nSelect the event by id (case-sensitive)\nR:"))
+<<<<<<< HEAD
         
         try:
           my_calendar.delete_event(choice)
           print("Event deleted.")
         except EventNotFound as error:
           print(f"Something went wrong: {error}")
+=======
+        sucess = my_calendar.delete_event(choice)
+        if sucess:
+          print("\nEvent deleted!")
+        else:
+          print("\nEvent not found!")
+>>>>>>> 06e0675f031124a484bfee8a756d804cb93926aa
       case '6': # Exit
         print("\nBye!")
         break
