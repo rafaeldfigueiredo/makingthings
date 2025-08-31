@@ -47,7 +47,7 @@ def create_event(event:EventCreate):
 def update_event(event_id:int,event_to_update:EventUpdate):
     try:
         updated_event = calendar_service.update_event(event_id,event_to_update)
-        return {"message":"Event deleted succesfully","event":updated_event}
+        return {"message":"Event updated successfully","event":updated_event}
     except EventNotFound as error:
         raise HTTPException(status_code=404,detail=str(error))    
 
@@ -56,6 +56,6 @@ def update_event(event_id:int,event_to_update:EventUpdate):
 def delete_event(event_id:int):
     try:
         calendar_service.delete_event(event_id)
-        return {"message":"Event deleted succesfully"}
+        return {"message":"Event deleted successfully"}
     except EventNotFound as error:
         raise HTTPException(status_code=404,detail=str(error))

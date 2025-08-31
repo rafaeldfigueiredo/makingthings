@@ -22,7 +22,7 @@ class CalendarService:
   def update_event(self,event_id,event_update:EventUpdate):
     event = self.event_repo.get_event_by_id(event_id)
     if not event:
-      raise EventNotFound(f"Event with id {event_id} no found")
+      raise EventNotFound(f"Event with id {event_id} not found")
     if event_update.title is not None:
       event.title = event_update.title
     if event_update.date is not None:
@@ -33,7 +33,7 @@ class CalendarService:
     return updated_event
   
   def delete_event(self,event_id):
-    event = self.event_repo.delete_event(event_id)
+    event = self.event_repo.get_event_by_id(event_id)
     if not event:
-      raise EventNotFound(f"Event with id {event_id} no found")
+      raise EventNotFound(f"Event with id {event_id} not found")
     return self.event_repo.delete_event(event_id)
